@@ -21,16 +21,16 @@ import Image from 'next/image';
 
 
 const Home: FC = () => {
-  const [activeTab, setActiveTab] = useState<string | null>('first');
   
-  const [halfLife, setHalfLife] = useState(0);
+  const [ans, setAns] = useState("");
   
   const form = useForm({
     initialValues: {
       initialQuantity: "",
       remainingQuantity: "",
       time:"",
-      unit :"second",
+      halfLife:"",
+      
     },
   });
 
@@ -39,21 +39,21 @@ const Home: FC = () => {
     initialQuantity,
     remainingQuantity,
     time,
-    unit,
+    halfLife,
   }: {
     initialQuantity: number | string;
     remainingQuantity: number | string;
     time:number | string;
-    unit:string;
+    halfLife:number | string;
   }) {
 
-    if(typeof initialQuantity == "number" && typeof remainingQuantity == "number" && typeof time == "number")
+    if(typeof initialQuantity == "number" && typeof remainingQuantity == "number" && typeof time == "number" && typeof halfLife =="string")
     {
 
       
       // main logic
       
-      console.log(halfLife.toString())
+      // console.log(halfLife.toString())
       let ratio = (remainingQuantity / initialQuantity)
       
       ratio = Math.log(ratio);
@@ -64,18 +64,106 @@ const Home: FC = () => {
       ans = ans * -1;
       
       ans = ans / ratio;
-      console.log(ans);
       
-      console.log(ans);
+
+      let a = "Half-life, t1/2 = "+ans.toString();
       
-      setHalfLife(ans);
       
+      form.setValues({
+        
+        initialQuantity:"",
+        remainingQuantity:"",
+        time:"",
+        halfLife:"",
+      })
+      
+      setAns(a);
     }
+
+   else if(typeof initialQuantity == "number" && typeof remainingQuantity == "string" && typeof time == "number" && typeof halfLife =="number")
+   {
+    //at t time
+      let timeRatio = time / halfLife;
+
+      let ans = Math.pow(0.5 , timeRatio);
+
+      ans = ans * initialQuantity;
+
+      let a = "Quantity remains, Nt =  "+ans.toString();
+      
+      
+      form.setValues({
+        
+        initialQuantity:"",
+        remainingQuantity:"",
+        time:"",
+        halfLife:"",
+      })
+      
+      setAns(a);
+    
+   }
+
+   else if(typeof initialQuantity == "string" && typeof remainingQuantity == "number" && typeof time == "number" && typeof halfLife =="number")
+   {
+    let timeRatio = time / halfLife;
+
+    let ans = Math.pow(0.5 , timeRatio);
+
+    ans =  remainingQuantity / ans;
+
+    let a = "Initial quantity, No = "+ans.toString();
+    
+    
+    form.setValues({
+      
+      initialQuantity:"",
+      remainingQuantity:"",
+      time:"",
+      halfLife:"",
+    })
+    
+    setAns(a);
+   }
+
+   else if(typeof initialQuantity == "number" && typeof remainingQuantity == "number" && typeof time == "string" && typeof halfLife =="number")
+   {
+      //for current time
+
+      let ratio = (remainingQuantity / initialQuantity)
+      
+      ratio = Math.log(ratio);
+      
+      console.log(ratio);
+      
+      let ans = halfLife / (Math.log(2));
+      ans = ans * -1;
+      
+      ans = ans * ratio;
+      
+
+      let a = "Time, t = "+ans.toString();
+      
+      
+      form.setValues({
+        
+        initialQuantity:"",
+        remainingQuantity:"",
+        time:"",
+        halfLife:"",
+      })
+      
+      setAns(a);
+
+   }
+
+   else{
+    console.log("give only 3 input ");
+   }
+
   }
 
-  useEffect(() => {
-    calculateHalfLife({ initialQuantity: 0, remainingQuantity: 0 , time:0 , unit:"sec" });
-  }, []);
+  
 
  
 
@@ -91,10 +179,7 @@ const Home: FC = () => {
         sm={6}
       >
         <Box py={24} px={'16px'} w={{ base: '100%' }}>
-          <Tabs value={activeTab} onTabChange={setActiveTab}>
-           
-
-            <Tabs.Panel value="first">
+          
               <form
               
                 onSubmit={form.onSubmit((values) =>
@@ -105,69 +190,84 @@ const Home: FC = () => {
                   Half Life Calculator
                 </Text>
                 <Text mb="24px">
-                  This version of the generator calculates Half Life of radio active decay
+                The following tools can generate any one of the values from the other three in the half-life formula for a substance undergoing decay to decrease by half
                 </Text>
-                <NumberInput
-                  w="100%"
-                  precision={6}
-                  mb={'24px'}
-                  required
-                  label="Initial Quantity"
-                  {...form.getInputProps('initialQuantity')}
-                />
-
-                <NumberInput
-                  w="100%"
-                  precision={6}
-                  required
-                  mb={'24px'}
-                  
-                  label="Reamining Quantity"
-                  {...form.getInputProps('remainingQuantity')}
-                />
               
 
              
-
-              <Grid>
-                  <Grid.Col span={4}>
-                  <NumberInput
-                  precision={6}
-                  required
-                  w="100%"
-                  mb={'24px'}
-                  min={0}
-                  label="Time"
-                  {...form.getInputProps('time')}
-                />
+                <Grid>
+                  <Grid.Col md={6} lg={3}>
+                    <NumberInput
+                    w="100%"
+                    precision={6}
+                    
+                    mb={'24px'}
+                    hideControls
+                    label="Quantity remains"
+                    description={<div>
+                        N<sub>t</sub>
+                    </div>}
+                    {...form.getInputProps('remainingQuantity')}
+                    />
+                  
                   </Grid.Col>
-                  <Grid.Col span={4}>
-                  <Select
-                   label
-                    placeholder="Pick one"
-                    dropdownPosition = "bottom"
-                    data={[
-                      { value: 'Milisecond', label: 'Milisecond' },
-                      { value: 'Second', label: 'Second' },
-                      { value: 'Minute', label: 'Minute' },
-                      { value: 'Hour', label: 'Hour' },
-                      { value: 'Day', label: 'Day' },
-                      { value: 'Weeks', label: 'Weeks' },
-                      { value: 'Month', label: 'Month' },
-                      { value: 'Year', label: 'Year' },
-                      
 
-                    ]}
-                  {...form.getInputProps('unit')}
-
-                  />
+                  <Grid.Col md={6} lg={3}>
+                    <NumberInput
+                    w="100%"
+                    precision={6}
+                    mb={'24px'}
+                    hideControls
+                    label="Initial Quantity"
+                    description={<div>
+                      N<sub>0</sub>
+                  </div>}
+                    {...form.getInputProps('initialQuantity')}
+                    />
                   </Grid.Col>
-              
-                </Grid>
 
+
+
+                  <Grid.Col md={6} lg={3}>
+
+                      <NumberInput
+                        precision={6}
+                        hideControls
+                        w="100%"
+                        mb={'24px'}
+                        min={0}
+                        label="Time"
+                        description={<div>
+                          t
+                      </div>}
+                        {...form.getInputProps('time')}
+                      />
+                  
+                  </Grid.Col>
+
+
+                  <Grid.Col md={6} lg={3}>
+                    <NumberInput
+                      precision={6}
+                      w="100%"
+                      mb={'24px'}
+                      min={0}
+                      hideControls
+                      label="Half Life"
+                      description={<div>
+                        t<sub>1/2</sub>
+                    </div>}
+                      {...form.getInputProps('halfLife')}
+                    />
+                  </Grid.Col>
+              </Grid>
+
+            
+
+                
                 <Flex mb="24px" justify="flex-end">
                   <Button size="md" color="violet" type="submit">
-                    <Text ml="6px">Calculate Half Life</Text>
+                    <Text ml="6px">Calculate</Text>
                   </Button>
                   <Button
                     onClick={form.reset}
@@ -176,23 +276,30 @@ const Home: FC = () => {
                     size="md"
                     color="gray"
                   >
-                    <Text>Clean</Text>
+                    <Text onClick={()=>{
+                      form.setValues({
+        
+                        initialQuantity:"",
+                        remainingQuantity:"",
+                        time:"",
+                        halfLife:"",
+                      })
+                    }}>Clean</Text>
                   </Button>
                 </Flex>
               </form>
-            </Tabs.Panel>
             
-          </Tabs>
+
         </Box>
       </Grid.Col>
       <Grid.Col sm={6}>
         <Box p="20px">
           <Flex justify="space-between">
             <Text size="24px" mb="12px">
-              Half Life Generator
+            Half-Life Calculator
             </Text>
-            {halfLife.toString() != "NaN" && (
-              <CopyButton value={halfLife.toString()}>
+            {ans != "" && (
+              <CopyButton value={ans}>
                 {({ copied, copy }) => (
                   <Button size="sm" px={8} variant="default" onClick={copy}>
                     <Image src={CopyIcon} width={12} height={12} alt="" />
@@ -216,7 +323,7 @@ const Home: FC = () => {
             })}
           >
             
-          {halfLife.toString() != "NaN" && <Text  align="center" size="24px" color="#202123">{halfLife + "   " + form.values.unit}</Text>}
+          {ans != "" && <Text  align="center" size="24px" color="#202123">{ans}</Text>}
           </Box>
 
           
