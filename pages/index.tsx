@@ -12,11 +12,13 @@ import {
   Group,
   Select,
   Button,
+
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-
+import { type } from 'os';
 import CopyIcon from '@/images/copy.svg';
 import Image from 'next/image';
+
 
 const Home: FC = () => {
   const [activeTab, setActiveTab] = useState<string | null>('first');
@@ -25,9 +27,9 @@ const Home: FC = () => {
   
   const form = useForm({
     initialValues: {
-      initialQuantity: 0,
-      remainingQuantity: 0,
-      time:0,
+      initialQuantity: "",
+      remainingQuantity: "",
+      time:"",
       unit :"second",
     },
   });
@@ -39,33 +41,36 @@ const Home: FC = () => {
     time,
     unit,
   }: {
-    initialQuantity: number;
-    remainingQuantity: number;
-    time:number;
+    initialQuantity: number | string;
+    remainingQuantity: number | string;
+    time:number | string;
     unit:string;
   }) {
 
-    
+    if(typeof initialQuantity == "number" && typeof remainingQuantity == "number" && typeof time == "number")
+    {
 
-    // main logic
-
-    console.log(halfLife.toString())
-    let ratio = (remainingQuantity / initialQuantity)
-
-    ratio = Math.log(ratio);
-
-    console.log(ratio);
-
-    let ans = time * (Math.log(2));
-    ans = ans * -1;
-    
-    ans = ans / ratio;
-    console.log(ans);
-
-    console.log(ans);
-
-    setHalfLife(ans);
-
+      
+      // main logic
+      
+      console.log(halfLife.toString())
+      let ratio = (remainingQuantity / initialQuantity)
+      
+      ratio = Math.log(ratio);
+      
+      console.log(ratio);
+      
+      let ans = time * (Math.log(2));
+      ans = ans * -1;
+      
+      ans = ans / ratio;
+      console.log(ans);
+      
+      console.log(ans);
+      
+      setHalfLife(ans);
+      
+    }
   }
 
   useEffect(() => {
@@ -104,19 +109,19 @@ const Home: FC = () => {
                 </Text>
                 <NumberInput
                   w="100%"
-                  precision={4}
+                  precision={6}
                   mb={'24px'}
-                  min={0}
+                  required
                   label="Initial Quantity"
                   {...form.getInputProps('initialQuantity')}
                 />
 
                 <NumberInput
                   w="100%"
-                  precision={4}
-
+                  precision={6}
+                  required
                   mb={'24px'}
-                  min={1}
+                  
                   label="Reamining Quantity"
                   {...form.getInputProps('remainingQuantity')}
                 />
@@ -127,11 +132,11 @@ const Home: FC = () => {
               <Grid>
                   <Grid.Col span={4}>
                   <NumberInput
-                  precision={4}
-                  
+                  precision={6}
+                  required
                   w="100%"
                   mb={'24px'}
-                  min={1}
+                  min={0}
                   label="Time"
                   {...form.getInputProps('time')}
                 />
@@ -186,21 +191,35 @@ const Home: FC = () => {
             <Text size="24px" mb="12px">
               Half Life Generator
             </Text>
-           
+            {halfLife.toString() != "NaN" && (
+              <CopyButton value={halfLife.toString()}>
+                {({ copied, copy }) => (
+                  <Button size="sm" px={8} variant="default" onClick={copy}>
+                    <Image src={CopyIcon} width={12} height={12} alt="" />
+                    {copied && <Text ml={4}>Copied</Text>}
+                  </Button>
+                )}
+              </CopyButton>
+            )}
           </Flex>
+
+          
           <Box
+
             p={20}
             sx={() => ({
               backgroundColor: '#e9ecef',
               borderRadius: '3px',
               border: '1px solid',
               borderColor: '#dee2e6',
+        
             })}
           >
-
-            {halfLife.toString() != "NaN" && <Text>{halfLife + "   " + form.values.unit}</Text>}
-          
+            
+          {halfLife.toString() != "NaN" && <Text  align="center" size="24px" color="#202123">{halfLife + "   " + form.values.unit}</Text>}
           </Box>
+
+          
         </Box>
       </Grid.Col>
     </Grid>
