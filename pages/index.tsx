@@ -23,6 +23,15 @@ import Image from 'next/image';
 const Home: FC = () => {
   
   const [ans, setAns] = useState("");
+
+  const timeForm = useForm({
+    initialValues:{
+      halfTime :"",
+      meanTime :"",
+      decay :"",
+    }
+
+  })
   
   const form = useForm({
     initialValues: {
@@ -167,6 +176,91 @@ const Home: FC = () => {
 
  
 
+  function calculateTime({halfTime,
+  meanTime,
+decay}: {
+    halfTime: string | number;
+    meanTime: string | number;
+    decay: string | number;
+}): void {
+
+    if(typeof halfTime == 'number')
+    {
+      let half = halfTime
+      //mean life
+      let mean = halfTime / Math.log(2);
+
+      //decay
+      let decay = 1 / mean;
+
+      let ans = "half-life (t1/2): " + half.toString() +
+      "\nmean lifetime (τ): " + mean.toString() +
+      "\ndecay constant (λ): " + decay.toString();
+
+      timeForm.setValues({
+        halfTime:"",
+        meanTime:"",
+        decay:""
+      })
+
+      setAns(ans);
+
+    }
+
+    else if(typeof meanTime == "number")
+    {
+        let mean = meanTime;
+
+        //halflife 
+        let half = mean * Math.log(2);
+
+        //decay
+
+        let decay = 1 / mean;
+
+        let ans = "half-life (t1/2): " + half.toString() +
+        "\nmean lifetime (τ): " + mean.toString() +
+        "\ndecay constant (λ): " + decay.toString();
+
+        timeForm.setValues({
+          halfTime:"",
+          meanTime:"",
+          decay:""
+        })
+
+        setAns(ans);
+
+    }
+
+    else if(typeof decay == "number")
+    {
+        //mean
+        let mean = 1 / decay;
+
+        //half
+
+        let half = mean * Math.log(2);
+       
+        let ans = "half-life (t1/2): " + half.toString() +
+        "\nmean lifetime (τ): " + mean.toString() +
+        "\ndecay constant (λ): " + decay.toString();
+
+        timeForm.setValues({
+          halfTime:"",
+          meanTime:"",
+          decay:""
+        })
+
+        setAns(ans);
+
+    }
+
+    else{
+        console.log("give only 2 params");
+    }
+
+  }
+
   return (
     <Grid h={'100%'} mt={0} mb={0}>
       <Grid.Col
@@ -291,6 +385,114 @@ const Home: FC = () => {
             
 
         </Box>
+
+        <Box py={24} px={'16px'} w={{ base: '100%' }}>
+          
+              <form
+              
+                onSubmit={timeForm.onSubmit((values) =>
+                  calculateTime(values)
+                )}
+              >
+                <Text mt="12px" size="24px" mb="12px">
+                Half-Life, Mean Lifetime, and Decay Constant Conversion
+                </Text>
+                  
+                <Text mb="24px">
+                Please provide any one of the following to get the other two.
+                </Text>
+
+             
+                <Grid>
+                  <Grid.Col md={4} lg={3}>
+                    <NumberInput
+                    w="100%"
+                    precision={6}
+                    
+                    mb={'24px'}
+                    hideControls
+                    label="Half-Life"
+                    description={<div>
+                        t<sub>1/2</sub>
+                    </div>}
+                    {...timeForm.getInputProps('halfTime')}
+                    />
+                  
+                  </Grid.Col>
+
+                  <Grid.Col md={4} lg={3}>
+                    <NumberInput
+                    w="100%"
+                    precision={6}
+                    mb={'24px'}
+                    hideControls
+                    label="Mean Lifetime"
+                    description={<div>
+                      T
+                  </div>}
+                    {...timeForm.getInputProps("meanTime")}
+                    />
+                  </Grid.Col>
+
+
+
+                  <Grid.Col md={4} lg={3}>
+
+                      <NumberInput
+                        precision={6}
+                        hideControls
+                        w="100%"
+                        mb={'24px'}
+                        min={0}
+                        label="Decay constant"
+                        description={<div>
+                          λ
+                      </div>}
+                        {...timeForm.getInputProps("decay")}
+                        
+                      />
+                  
+                  </Grid.Col>
+
+
+                 
+              </Grid>
+
+            
+
+                
+                <Flex mb="24px" justify="flex-end">
+                  <Button size="md" color="violet" type="submit">
+                    <Text ml="6px">Calculate</Text>
+                  </Button>
+                  <Button
+                    onClick={form.reset}
+                    ml="12px"
+                    variant="outline"
+                    size="md"
+                    color="gray"
+                  >
+                    <Text onClick={()=>{
+                      form.setValues({
+        
+                        initialQuantity:"",
+                        remainingQuantity:"",
+                        time:"",
+                        halfLife:"",
+                      })
+                      timeForm.setValues({
+                        halfTime:"",
+                        meanTime:"",
+                        decay:"",
+                      })
+                    }}>Clean</Text>
+                  </Button>
+                </Flex>
+              </form>
+            
+
+        </Box>
+
       </Grid.Col>
       <Grid.Col sm={6}>
         <Box p="20px">
