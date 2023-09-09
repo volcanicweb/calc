@@ -22,7 +22,7 @@ import Image from 'next/image';
 
 const Home: FC = () => {
   
-  const [ans, setAns] = useState("");
+  const [ans, setAns] = useState([""]);
 
   const timeForm = useForm({
     initialValues:{
@@ -75,7 +75,7 @@ const Home: FC = () => {
       ans = ans / ratio;
       
 
-      let a = "Half-life, t1/2 = "+ans.toString();
+      let a:string[] = ["Half-life, t1/2 = "+ans.toString()]
       
       
       form.setValues({
@@ -98,7 +98,7 @@ const Home: FC = () => {
 
       ans = ans * initialQuantity;
 
-      let a = "Quantity remains, Nt =  "+ans.toString();
+      let a = ["Quantity remains, Nt =  "+ans.toString()]
       
       
       form.setValues({
@@ -121,7 +121,7 @@ const Home: FC = () => {
 
     ans =  remainingQuantity / ans;
 
-    let a = "Initial quantity, No = "+ans.toString();
+    let a = ["Initial quantity, No = "+ans.toString()]
     
     
     form.setValues({
@@ -151,7 +151,7 @@ const Home: FC = () => {
       ans = ans * ratio;
       
 
-      let a = "Time, t = "+ans.toString();
+      let a = ["Time, t = "+ans.toString()]
       
       
       form.setValues({
@@ -193,9 +193,8 @@ decay}: {
       //decay
       let decay = 1 / mean;
 
-      let ans = "half-life (t1/2): " + half.toString() +
-      "\nmean lifetime (τ): " + mean.toString() +
-      "\ndecay constant (λ): " + decay.toString();
+      let ans :string[] =["half-life (t1/2): " + half.toString() , "mean lifetime (τ): " + mean.toString() , "decay constant (λ): " + decay.toString() ]  
+
 
       timeForm.setValues({
         halfTime:"",
@@ -218,9 +217,8 @@ decay}: {
 
         let decay = 1 / mean;
 
-        let ans = "half-life (t1/2): " + half.toString() +
-        "\nmean lifetime (τ): " + mean.toString() +
-        "\ndecay constant (λ): " + decay.toString();
+        let ans :string[] =["half-life (t1/2): " + half.toString() , "mean lifetime (τ): " + mean.toString() , "decay constant (λ): " + decay.toString() ]  
+
 
         timeForm.setValues({
           halfTime:"",
@@ -241,9 +239,7 @@ decay}: {
 
         let half = mean * Math.log(2);
        
-        let ans = "half-life (t1/2): " + half.toString() +
-        "\nmean lifetime (τ): " + mean.toString() +
-        "\ndecay constant (λ): " + decay.toString();
+        let ans :string[] =["half-life (t1/2): " + half.toString() , "mean lifetime (τ): " + mean.toString() , "decay constant (λ): " + decay.toString() ]  
 
         timeForm.setValues({
           halfTime:"",
@@ -500,8 +496,8 @@ decay}: {
             <Text size="24px" mb="12px">
             Half-Life Calculator
             </Text>
-            {ans != "" && (
-              <CopyButton value={ans}>
+            {ans[0] != "" && ans.length == 3 && (
+              <CopyButton value={ans[0]+" "+ans[1] + " " + ans[2]}>
                 {({ copied, copy }) => (
                   <Button size="sm" px={8} variant="default" onClick={copy}>
                     <Image src={CopyIcon} width={12} height={12} alt="" />
@@ -510,6 +506,18 @@ decay}: {
                 )}
               </CopyButton>
             )}
+
+            {ans[0] != "" && ans.length == 1 && (
+              <CopyButton value={ans[0]}>
+                {({ copied, copy }) => (
+                  <Button size="sm" px={8} variant="default" onClick={copy}>
+                    <Image src={CopyIcon} width={12} height={12} alt="" />
+                    {copied && <Text ml={4}>Copied</Text>}
+                  </Button>
+                )}
+              </CopyButton>
+            )}
+
           </Flex>
 
           
@@ -525,7 +533,22 @@ decay}: {
             })}
           >
             
-          {ans != "" && <Text  align="center" size="24px" color="#202123">{ans}</Text>}
+          {ans[0] != "" && ans.length == 3 && <div>
+           <Text  align="center" size="24px" color="#202123">{ans[0]}</Text>
+           <Text  align="center" size="24px" color="#202123">{ans[1]}</Text>
+           <Text  align="center" size="24px" color="#202123">{ans[2]}</Text>
+
+          </div>
+          
+          }
+
+          {ans[0] != "" && ans.length == 1 && <div>
+           <Text  align="center" size="24px" color="#202123">{ans[0]}</Text>
+
+          </div>
+          
+          }
+
           </Box>
 
           
